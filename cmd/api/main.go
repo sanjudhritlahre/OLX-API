@@ -5,9 +5,13 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/sanjudhritlahre/olx-api/internal/config"
 )
 
 func main() {
+	cfg := config.MustLoad()
+
 	fmt.Println("OLX-API server is running...")
 
 	mux := http.NewServeMux()
@@ -19,12 +23,12 @@ func main() {
 		w.Write([]byte(`{"status" : "ok"}`))
 	})
 
-	srv := http.Server {
-		Addr: ":8090",
-		Handler: mux,
-		ReadTimeout: time.Second * 10,
+	srv := http.Server{
+		Addr:         ":" + cfg.Port,
+		Handler:      mux,
+		ReadTimeout:  time.Second * 10,
 		WriteTimeout: time.Second * 30,
-		IdleTimeout: time.Second * 60,
+		IdleTimeout:  time.Second * 60,
 	}
 
 	if err := srv.ListenAndServe(); err != nil {
