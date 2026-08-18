@@ -1,0 +1,8 @@
+{
+  "files.insertSpaces": false,
+  "[makefile]": {
+    "editor.insertSpaces": false,
+    "editor.trimAutoWhitespace": false
+  },
+  "files.eol": "\n"
+}
