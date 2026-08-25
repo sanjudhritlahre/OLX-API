@@ -31,9 +31,13 @@ func main() {
 	fmt.Println("Database Connected.")
 	fmt.Println("OLX-API server is running...")
 
+	// Database Initialization
+	lh := handlers.NewListingHandler(db)
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", handlers.Healthz)
-	mux.HandleFunc("GET /listings", handlers.Listings(db))
+	mux.HandleFunc("GET /listings", lh.Listings)
+	mux.HandleFunc("DELETE /listings/{id}", lh.DeleteListing)
 
 	srv := http.Server{
 		Addr:         ":" + cfg.Port,
