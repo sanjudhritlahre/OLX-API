@@ -28,6 +28,13 @@ func main() {
 	// Ensure Proper Cleanup
 	defer db.Close()
 
+	handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		AddSource: true,
+		Level: slog.LevelInfo,
+	})
+	logger := slog.New(handler)
+	slog.SetDefault(logger)
+
 	fmt.Println("Database Connected.")
 	fmt.Println("OLX-API server is running...")
 
