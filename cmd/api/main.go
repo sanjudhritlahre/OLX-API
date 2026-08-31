@@ -15,6 +15,7 @@ import (
 	"github.com/sanjudhritlahre/olx-api/internal/config"
 	"github.com/sanjudhritlahre/olx-api/internal/db"
 	"github.com/sanjudhritlahre/olx-api/internal/handlers"
+	"github.com/sanjudhritlahre/olx-api/internal/middleware"
 )
 
 func main() {
@@ -28,12 +29,12 @@ func main() {
 	// Ensure Proper Cleanup
 	defer db.Close()
 
-	handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+	logHandler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		AddSource: true,
 		Level: slog.LevelInfo,
 	})
 
-	logger := slog.New(handler)
+	logger := slog.New(logHandler)
 	slog.SetDefault(logger)
 
 	fmt.Println("Database Connected.")
@@ -47,9 +48,11 @@ func main() {
 	mux.HandleFunc("GET /listings", lh.Listings)
 	mux.HandleFunc("DELETE /listings/{id}", lh.DeleteListing)
 
+	handler := middleware.RequestId(mux)
+
 	srv := http.Server{
 		Addr:         ":" + cfg.Port,
-		Handler:      mux,
+		Handler:      handler,
 		ReadTimeout:  time.Second * 10,
 		WriteTimeout: time.Second * 30,
 		IdleTimeout:  time.Second * 60,
