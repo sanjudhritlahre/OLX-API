@@ -32,6 +32,7 @@ func main() {
 		AddSource: true,
 		Level: slog.LevelInfo,
 	})
+
 	logger := slog.New(handler)
 	slog.SetDefault(logger)
 
@@ -39,7 +40,7 @@ func main() {
 	fmt.Println("OLX-API server is running...")
 
 	// Database Initialization
-	lh := handlers.NewListingHandler(db)
+	lh := handlers.NewListingHandler(db, logger)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", handlers.Healthz)
