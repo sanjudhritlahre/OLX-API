@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/sanjudhritlahre/olx-api/internal/httpx"
 	"github.com/sanjudhritlahre/olx-api/internal/middleware"
 )
 
@@ -42,7 +43,7 @@ func (lh ListingHandler) Listings(w http.ResponseWriter, r *http.Request) {
 			LIMIT 100`)
 	if err != nil {
 		lh.logger.Info("lh.db.QueryContext error", "err", err)
-		http.Error(w, "internal error", http.StatusInternalServerError)
+		httpx.Error(w, http.StatusInternalServerError, "Unable to retrieve listings at this time.", httpx.InternalError)
 		return
 	}
 	defer rows.Close()
@@ -53,7 +54,7 @@ func (lh ListingHandler) Listings(w http.ResponseWriter, r *http.Request) {
 
 		if err := rows.Scan(&l.ID, &l.Title, &l.Description, &l.Price, &l.City, &l.CreatedAt); err != nil {
 			lh.logger.Info("rows.Scan error", "err", err)
-			http.Error(w, "internal error", http.StatusInternalServerError)
+			httpx.Error(w, http.StatusInternalServerError, "Unable to process listing data.", httpx.InternalError)
 			return
 		}
 
@@ -63,7 +64,7 @@ func (lh ListingHandler) Listings(w http.ResponseWriter, r *http.Request) {
 
 	if err := rows.Err(); err != nil {
 		log.Printf("rows.Err: %v", err)
-		http.Error(w, "internal error", http.StatusInternalServerError)
+		httpx.Error(w, http.StatusInternalServerError, "Unable to complete listing retrieval.", httpx.InternalError)
 		return
 	}
 
@@ -82,7 +83,7 @@ func (lh ListingHandler) DeleteListing(w http.ResponseWriter, r *http.Request) {
 	_, err := lh.db.ExecContext(ctx, `DELETE FROM listings WHERE id = $1`, id)
 	if err != nil {
 		lh.logger.Error("delete failed!", "listing_id", id, "request_id", requestId, "err", err)
-		http.Error(w, "internal error", http.StatusInternalServerError)
+		httpx.Error(w, http.StatusInternalServerError, "Unable to delete the listing at this time.", httpx.InternalError)
 		return
 	}
 
