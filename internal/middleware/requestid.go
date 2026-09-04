@@ -33,6 +33,6 @@ func RequestId(next http.Handler) http.Handler {
 }
 
 func RequestIDFromContext(ctx context.Context) string {
-	requestId := ctx.Value("requestCtxId").(string)
-	return requestId
+	id, _ := ctx.Value(requestIDKey).(string)
+	return id
 }
